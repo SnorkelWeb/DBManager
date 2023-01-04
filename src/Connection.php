@@ -2,6 +2,8 @@
 
 namespace SnorkelWeb\DBManager;
 
+use Closure;
+use Exception;
 use SnorkelWeb\DBManager\Credentials;
 use PDO;
 
@@ -14,7 +16,8 @@ class Connection
     private $type;
     public $credentials;
 
-    protected $pdo;
+    public $connection;
+    public $bool;
 
     public function __construct($type = null, $hostname = null, $username = null, $password = null, $dbname = null)
     {
@@ -28,17 +31,14 @@ class Connection
 
 // Create Setter
         $this->credentials->Setter($this->type,$this->hostname,$this->username,$this->password,$this->dbname);
+
+        try {
+        $this->connection = $this->credentials->OpenConnection();
+        } catch (\PDOException $e) {
+            $this->bool = false;
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        }
+    return $this;
     }
 
-    public function connect()
-    {
-        try {
-            $pdo = $this->credentials->OpenConnection();
-            return $pdo;
-        } catch (\PDOException $e) {
-            
-            // throw new \PDOExce ption($e->getMessage(), (int)$e->getCode());
-        }
-      
-    }
 }
