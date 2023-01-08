@@ -18,6 +18,10 @@ class Credentials
              // Set Empty Array
              $this->fetchini();
            }
+           else
+           {
+            // exit("Configuration ini file is missing please add one refresh this page");
+           }
     }
 
     public function Setter($type,$hostname,$username,$password,$dbname)
