@@ -3,8 +3,8 @@
 namespace SnorkelWeb\DBManager;
 
 use SnorkelWeb\DBManager\Credentials;
-use SnorkelWeb\DBManager\Traits\QueryManager;
 use PDO;
+use SnorkelWeb\DBManager\Traits\Params;
 
 class Connection
 {
@@ -20,6 +20,7 @@ class Connection
 
     private $stmt;
     private $sql;
+
 
     /**
      * Constructor Database COnnections
@@ -37,19 +38,16 @@ class Connection
     {
         // Instantiate a new Class;
         $this->credentials = new Credentials();
-     
-        if(file_exists(DATABASE))
-        {
+
+        if (file_exists(DATABASE)) {
             // Allow to connect with ini file with the Ability of Database Override.
-        is_null($type) ? $this->type = $this->credentials->key["type"] : $this->type = $type;
-        is_null($username) ? $this->username = $this->credentials->key["username"] : $this->username = $username;
-        is_null($hostname) ? $this->hostname = $this->credentials->key["hostname"] : $this->hostname = $hostname;
-        is_null($dbname) ? $this->dbname = $this->credentials->key['dbname'] : $this->dbname = $dbname;
-        is_null($password) ? $this->password = $this->credentials->key['password'] : $this->password = $password;
-        $this->bool = true;
-        }
-        else
-        {
+            is_null($type) ? $this->type = $this->credentials->key["type"] : $this->type = $type;
+            is_null($username) ? $this->username = $this->credentials->key["username"] : $this->username = $username;
+            is_null($hostname) ? $this->hostname = $this->credentials->key["hostname"] : $this->hostname = $hostname;
+            is_null($dbname) ? $this->dbname = $this->credentials->key['dbname'] : $this->dbname = $dbname;
+            is_null($password) ? $this->password = $this->credentials->key['password'] : $this->password = $password;
+            $this->bool = true;
+        } else {
             //Allow users to enter details manaually  if they dont want to use a ini file.
             $credential_vars = ["type" => $type, "Hostname" => $hostname, "Username" => $username, "Password" => $password, "Database name" => $dbname];
             foreach ($credential_vars as $key => $variables) {
@@ -77,7 +75,7 @@ class Connection
             }
             return $this;
         } else {
-           exit("failed to connect");
+            exit("failed to connect");
         }
     }
 
@@ -86,20 +84,19 @@ class Connection
     {
         $this->sql = $sql;
         $this->stmt = $this->connection->prepare($this->sql);
-        !is_null($array) ? $this->Addparams($array) : false;
+        !is_null($array) ? $this->BindValues($array) : false;
         $this->stmt->execute();
         return $this;
     }
 
-    public function Addparams($array)
+    public function BindValues($array)
     {
-
-        // print_r($this->param);
-
-        // Prepare code
-        foreach ($array as $key => $value) {
-            //    Execute the loop and bind the parameters
-            $this->stmt->bindValue($key, $value);
+        // !is_null($array) ? $this->param = $array :  $this->param = array_combine($this->paramkey, $this->paramvalue);
+        if (!empty($array)) {       // Prepare code
+            foreach ($array as $key => $value) {
+                //    Execute the loop and bind the parameters
+                 $this->stmt->bindValue($key, $value);
+            }
         }
     }
 
